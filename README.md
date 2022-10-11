@@ -8,6 +8,8 @@ Given regular expression in reverse polish notation and a character, outputs len
 
 > mkdir build
 
+> cd build
+
 > cmake ..
 
 > make
