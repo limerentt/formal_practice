@@ -4,7 +4,7 @@ Given regular expression in reverse polish notation and a character, outputs len
 
 ### Installation:
 
-> git clone git@github.com:limerentt/formal_practice.git
+> git clone https://github.com/limerentt/formal_practice.git
 
 ### How it works:
 
