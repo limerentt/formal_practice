@@ -44,6 +44,8 @@ Asterisk preserves prefix of _a_ and postfix of _b_, substring can change to pre
 
 The answer is substring of expression in the very end.
 
+Asymptotic is linear wrt length of regular expression in polish notation since every new symbol and operation is processed in _O(1)_ time.
+
 ## Testing:
 
 > cd cmake-build-debug
