@@ -19,9 +19,7 @@ namespace Max_substring {
 }
 
 void process(char c, std::stack<reg_exp>& stack);
+void process_asterisk(std::stack<reg_exp>& stack);
+void process_concatenation(reg_exp& new_reg_exp, reg_exp& first, reg_exp& second);
+void process_plus(reg_exp& new_reg_exp, reg_exp& first, reg_exp& second);
 bool is_exp_correct(const std::stack<reg_exp>& stack, char c);
-
-//#ifndef FORMAL_PRACTICE__MAX_SUBSTRING_H_
-//#define FORMAL_PRACTICE__MAX_SUBSTRING_H_
-
-//#endif //FORMAL_PRACTICE__MAX_SUBSTRING_H_
