@@ -1,62 +1,53 @@
 #include "Max_substring.h"
 
-reg_exp::reg_exp(char c, char x) {
-    full_word_x = (c == x);
-    pref = post = root = (c == x ? 1 : 0);
-    is_eps = (c == '1');
+reg_exp::reg_exp(char c, char x):   full_word_x(c == x),
+                                    pref(c == x),
+                                    post(c == x),
+                                    root(c == x),
+                                    is_eps(c == '1') {}
+
+void process_asterisk(std::stack<reg_exp>& stack) {
+    reg_exp new_reg_exp = stack.top();
+    stack.pop();
+    if (new_reg_exp.full_word_x) {
+        std::cout << "INF";
+        new_reg_exp.inf_captured = true;
+        stack.push(new_reg_exp);
+        return;
+    }
+    new_reg_exp.root = std::max(new_reg_exp.root, new_reg_exp.pref + new_reg_exp.post);
+    stack.push(new_reg_exp);
+}
+
+void process_concatenation(reg_exp& new_reg_exp, reg_exp& first, reg_exp& second) {
+    new_reg_exp.full_word_x = first.full_word_x && second.full_word_x;
+    new_reg_exp.pref = (second.full_word_x ? second.pref + first.pref : second.pref);
+    new_reg_exp.root = std::max(second.post + first.pref, std::max(first.root, second.root));
+    new_reg_exp.post = (first.full_word_x ? first.post + second.post : first.post);
+}
+
+void process_plus(reg_exp& new_reg_exp, reg_exp& first, reg_exp& second) {
+    new_reg_exp.full_word_x = first.full_word_x || second.full_word_x;
+    new_reg_exp.pref = std::max(first.pref, second.pref);
+    new_reg_exp.post = std::max(first.post, second.post);
+    new_reg_exp.root = std::max(first.root, second.root);
 }
 
 void process(char c, std::stack<reg_exp>& stack) {
     if (c == '*') {
-        reg_exp new_reg_exp = stack.top();
-        stack.pop();
-        if (new_reg_exp.full_word_x) {
-            std::cout << "INF";
-            new_reg_exp.inf_captured = true;
-            stack.push(new_reg_exp);
-            return;
-        }
-        new_reg_exp.root = std::max(new_reg_exp.root, new_reg_exp.pref + new_reg_exp.post);
-        stack.push(new_reg_exp);
+        process_asterisk(stack);
         return;
     }
 
-    reg_exp first, second;
+    reg_exp new_reg_exp, first, second;
     first = stack.top(), stack.pop();
     second = stack.top(), stack.pop();
 
-    reg_exp new_reg_exp;
-
-    if (first.is_eps) {
-        stack.push(second);
-        return;
-    } else if (second.is_eps) {
-        stack.push(first);
+    if (first.is_eps || second.is_eps) {
+        (first.is_eps ? stack.push(second) : stack.push(first));
         return;
     }
-
-    if (c == '.') {
-        new_reg_exp.full_word_x = first.full_word_x && second.full_word_x;
-        if (second.full_word_x) {
-            new_reg_exp.pref = second.pref + first.pref;
-        } else {
-            new_reg_exp.pref = second.pref;
-        }
-
-        new_reg_exp.root = std::max(second.post + first.pref, std::max(first.root, second.root));
-
-        if (first.full_word_x) {
-            new_reg_exp.post = first.post + second.post;
-        } else {
-            new_reg_exp.post = first.post;
-        }
-
-    } else if (c == '+') {
-        new_reg_exp.full_word_x = first.full_word_x || second.full_word_x;
-        new_reg_exp.pref = std::max(first.pref, second.pref);
-        new_reg_exp.post = std::max(first.post, second.post);
-        new_reg_exp.root = std::max(first.root, second.root);
-    }
+    (c == '.' ? process_concatenation(new_reg_exp, first, second) : process_plus(new_reg_exp, first, second));
     stack.push(new_reg_exp);
 }
 
